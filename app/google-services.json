@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "397648173359",
+    "firebase_url": "https://chatroom-17aab.firebaseio.com",
+    "project_id": "chatroom-17aab",
+    "storage_bucket": "chatroom-17aab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:397648173359:android:4651144979a7b568",
+        "android_client_info": {
+          "package_name": "com.superchatroom.superchatroom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "397648173359-6kop06pnlbtf1gtgs50kqp6d77p3hi6r.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "397648173359-pp7ujbbp13qunv73rk34utj6i6iqscut.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.superchatroom.superchatroom",
+            "certificate_hash": "f18ac0a48d617ae672eb91c8f83c14a1df988781"
+          }
+        },
+        {
+          "client_id": "397648173359-j02fo1gd2fctttnhmerkcpi163r265on.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZo2rn8nH7FPePww8A0CTMdnfk50l6aZ0"
+        },
+        {
+          "current_key": "AIzaSyAoFUhzIkhdfI2lpCFFf5Lmb9x3v_OMSRk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "397648173359-6kop06pnlbtf1gtgs50kqp6d77p3hi6r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
