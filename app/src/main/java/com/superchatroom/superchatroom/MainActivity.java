@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 String message = inputEditText.getText().toString();
                 if (!TextUtils.isEmpty(message)) {
                     new SendMessageOperation()
-                            .execute(ApplicationConstants.TOPIC, message);
+                            .execute(ApplicationConstants.TOPIC, message,
+                                    firebaseAuth.getCurrentUser().getDisplayName());
                 }
                 inputEditText.setText("");
                 inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);

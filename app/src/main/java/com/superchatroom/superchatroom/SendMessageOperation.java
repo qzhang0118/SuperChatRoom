@@ -34,22 +34,24 @@ public class SendMessageOperation extends AsyncTask<String, Void, Boolean> {
         return response.body().string();
     }
 
-    private String assembleJson(String topic, String message) {
-        return "{\"topic\":\"" + topic + "\",\"message\":\"" + message + "\"}";
+    private String assembleJson(String topic, String message, String username) {
+        return "{\"topic\":\"" + topic + "\",\"message\":\"" + message
+                + "\",\"username\":\"" + username + "\"}";
     }
 
     /**
-     * Posts a message in background. Expects two parameters, the first is topic, the second is
-     * message.
+     * Posts a message in background. Expects three parameters, the first is topic, the second is
+     * message, the third is username.
      *
      * @return true if message is sent successfully, false otherwise.
      */
     @Override
     protected Boolean doInBackground(String... params) {
         try {
-            postMessage(assembleJson(params[0], params[1]));
+            postMessage(assembleJson(params[0], params[1], params[2]));
         } catch (IOException e) {
-            Log.e(TAG, "Unable to send message: " + params[1] + " to topic: " + params[0], e);
+            Log.e(TAG, "Unable to send message: " + params[1] + " to topic: " + params[0]
+                    + " from username " + params[2], e);
             return false;
         }
         return true;

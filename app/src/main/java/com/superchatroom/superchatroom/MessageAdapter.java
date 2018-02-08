@@ -6,12 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.List;
 
 /**
  * Adaptor stores a list of messages.
  */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+    private static final int LEFT_MESSAGE_VIEW = 0;
+    private static final int RIGHT_MESSAGE_VIEW = 1;
 
     protected static class MessageViewHolder extends RecyclerView.ViewHolder {
         protected TextView timeTextView;
@@ -19,8 +23,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         public MessageViewHolder(View view) {
             super(view);
-            this.timeTextView = (TextView) view.findViewById(R.id.time);
-            this.messageTextView = (TextView) view.findViewById(R.id.message);
+            this.timeTextView = view.findViewById(R.id.time);
+            this.messageTextView = view.findViewById(R.id.message);
         }
     }
 
@@ -41,7 +45,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.message_view, parent, false);
+                inflate(viewType == LEFT_MESSAGE_VIEW ?
+                                R.layout.left_message_view : R.layout.right_message_view,
+                        parent, false);
         return new MessageViewHolder(view);
     }
 
@@ -49,7 +55,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public void onBindViewHolder(MessageViewHolder holder, int position) {
         MessageItem messageItem = messageItems.get(position);
         holder.timeTextView.setText(messageItem.getReceivedTime());
-        holder.messageTextView.setText(messageItem.getMessage());
+        String receivedMessage = messageItem.getMessage();
+        int index = receivedMessage.indexOf(":");
+        holder.messageTextView.setText(receivedMessage.substring(0, index) + ": "
+                + receivedMessage.substring(index + 1));
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        MessageItem messageItem = messageItems.get(position);
+        String receivedMessage = messageItem.getMessage();
+        int index = receivedMessage.indexOf(":");
+        if (receivedMessage.substring(0, index)
+                .equals(FirebaseAuth.getInstance().getCurrentUser().getDisplayName())) {
+            return RIGHT_MESSAGE_VIEW;
+        }
+        return LEFT_MESSAGE_VIEW;
     }
 
     @Override

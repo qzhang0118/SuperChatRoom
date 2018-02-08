@@ -23,7 +23,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Type your message" >
+            android:hint="@string/hint_message" >
         </EditText>
 
         <Button
@@ -31,7 +31,7 @@
             android:layout_width="20dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Send">
+            android:text="@string/send_button">
         </Button>
     </LinearLayout>
 
