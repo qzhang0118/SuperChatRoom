@@ -1,4 +1,4 @@
-package com.superchatroom.superchatroom;
+package com.superchatroom.superchatroom.operation;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -34,7 +34,7 @@ public class SendMessageOperation extends AsyncTask<String, Void, Boolean> {
         return response.body().string();
     }
 
-    private String assembleJson(String topic, String message, String username) {
+    private String assembleMessageJson(String topic, String message, String username) {
         return "{\"topic\":\"" + topic + "\",\"message\":\"" + message
                 + "\",\"username\":\"" + username + "\"}";
     }
@@ -48,7 +48,7 @@ public class SendMessageOperation extends AsyncTask<String, Void, Boolean> {
     @Override
     protected Boolean doInBackground(String... params) {
         try {
-            postMessage(assembleJson(params[0], params[1], params[2]));
+            postMessage(assembleMessageJson(params[0], params[1], params[2]));
         } catch (IOException e) {
             Log.e(TAG, "Unable to send message: " + params[1] + " to topic: " + params[0]
                     + " from username " + params[2], e);

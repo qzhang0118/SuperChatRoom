@@ -1,4 +1,4 @@
-package com.superchatroom.superchatroom;
+package com.superchatroom.superchatroom.item;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

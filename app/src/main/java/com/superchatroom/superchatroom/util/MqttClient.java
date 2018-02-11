@@ -19,6 +19,9 @@ import java.util.UUID;
  */
 public class MqttClient {
     private static final String TAG = MqttClient.class.getSimpleName();
+    public static interface Callback {
+        void onConnected();
+    }
 
     public abstract static class MqttClientCallback implements MqttCallbackExtended {
         @Override
@@ -39,14 +42,13 @@ public class MqttClient {
     public MqttClient(Context context) {
         mqttAndroidClient = new MqttAndroidClient(context,
                 ApplicationConstants.MQTT_SERVER_URI, UUID.randomUUID().toString());
-        connect();
     }
 
     public void setCallback(MqttClientCallback callback) {
         mqttAndroidClient.setCallback(callback);
     }
 
-    public void connect() {
+    public void connect(final Callback callback) {
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
@@ -55,7 +57,7 @@ public class MqttClient {
             mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    subscribeToTopic();
+                    callback.onConnected();
                 }
 
                 @Override
@@ -79,24 +81,25 @@ public class MqttClient {
         }
     }
 
-    private void subscribeToTopic() {
-        try {
-            mqttAndroidClient.subscribe(ApplicationConstants.TOPIC, 0, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.d(TAG, "Subscribed to " + ApplicationConstants.TOPIC + ".");
-                }
+    public void subscribe(final String currentTopic) {
+        if (!currentTopic.isEmpty()) {
+            try {
+                mqttAndroidClient.subscribe(currentTopic, 0, null, new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        Log.d(TAG, "Subscribed to " + currentTopic + ".");
+                    }
 
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.e(TAG, "Subscription to topic " +
-                            ApplicationConstants.TOPIC + " failed.", exception);
-                }
-            });
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        Log.e(TAG, "Subscription to topic " +
+                                currentTopic + " failed.", exception);
+                    }
+                });
 
-        } catch (MqttException ex) {
-            Log.e(TAG, "Subscription to topic " +
-                    ApplicationConstants.TOPIC + " failed.", ex);
+            } catch (MqttException ex) {
+                Log.e(TAG, "Subscription to topic " + currentTopic + " failed.", ex);
+            }
         }
     }
 }

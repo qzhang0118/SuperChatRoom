@@ -1,4 +1,4 @@
-package com.superchatroom.superchatroom;
+package com.superchatroom.superchatroom.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.superchatroom.superchatroom.R;
+import com.superchatroom.superchatroom.item.MessageItem;
 
 import java.util.List;
 

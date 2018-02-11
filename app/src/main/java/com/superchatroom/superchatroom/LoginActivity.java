@@ -35,18 +35,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         FirebaseApp.initializeApp(this);
         firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() == null) {
+            setContentView(R.layout.activity_login);
+            findViewById(R.id.sign_in_button).setOnClickListener(this);
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.
-                Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this, gso);
+            GoogleSignInOptions gso = new GoogleSignInOptions.
+                    Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail().build();
+            googleSignInClient = GoogleSignIn.getClient(this, gso);
+        } else {
+            updateUI(firebaseAuth.getCurrentUser());
+        }
     }
 
     @Override
@@ -92,7 +95,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateUI(FirebaseUser firebaseUser) {
         if (firebaseUser != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Intent intent = new Intent(LoginActivity.this, SubscribeActivity.class);
+            startActivity(intent);
         }
     }
 
