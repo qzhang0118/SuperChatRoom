@@ -20,6 +20,8 @@ public class MessageItem {
     private Date receivedTime;
     private String message;
 
+    public MessageItem(){}
+
     public MessageItem(Date time, String message) {
         this.receivedTime = time;
         this.message = message;
@@ -29,7 +31,15 @@ public class MessageItem {
         return DATE_FORMAT.format(receivedTime);
     }
 
+    public void setReceivedTime(String receivedTime) {
+        this.receivedTime = new Date(receivedTime);
+    }
+
     public String getMessage() {
         return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -4,4 +4,5 @@
     <string name="send_button">Send</string>
     <string name="weather_topic">Weather</string>
     <string name="technology_topic">Technology</string>
+    <string name="sign_out_button">Sign Out</string>
 </resources>

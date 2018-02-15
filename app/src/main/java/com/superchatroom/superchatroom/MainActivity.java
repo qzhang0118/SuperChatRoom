@@ -2,6 +2,7 @@ package com.superchatroom.superchatroom;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.superchatroom.superchatroom.adapter.MessageAdapter;
+import com.superchatroom.superchatroom.database.ChatEntryDbHelper;
 import com.superchatroom.superchatroom.item.MessageItem;
 import com.superchatroom.superchatroom.item.Topic;
 import com.superchatroom.superchatroom.operation.SendMessageOperation;
@@ -25,7 +27,6 @@ import com.superchatroom.superchatroom.util.MqttClient;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.superchatroom.superchatroom.R.id.topic;
@@ -39,21 +40,26 @@ public class MainActivity extends AppCompatActivity {
     private InputMethodManager inputMethodManager;
     private FirebaseAuth firebaseAuth;
     public String currentTopic;
+    private String user;
     private Topic parcelableTopic;
+    private ChatEntryDbHelper chatEntryDbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        chatEntryDbHelper = new ChatEntryDbHelper(this);
 
         Intent intent = getIntent();
         if (intent.hasExtra(ApplicationConstants.TOPIC_KEY)) {
             parcelableTopic = intent.getParcelableExtra(ApplicationConstants.TOPIC_KEY);
             currentTopic = parcelableTopic.getTopic();
             ((TextView) findViewById(topic)).setText(parcelableTopic.getDisplayName());
+            adapter = new MessageAdapter(chatEntryDbHelper.getChatEntry(currentTopic));
         } else {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
+            return;
         }
 
         FirebaseApp.initializeApp(this);
@@ -63,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.my_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MessageAdapter(new ArrayList<MessageItem>());
         recyclerView.setAdapter(adapter);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount());
 
         sendButton = findViewById(R.id.submit_button);
         inputEditText = findViewById(R.id.message_input);
@@ -73,10 +79,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String message = inputEditText.getText().toString();
                 message = TextUtils.join("\\\\n",message.split("\\n"));
+                user = firebaseAuth.getCurrentUser().getDisplayName();
                 if (!TextUtils.isEmpty(message)) {
-                    new SendMessageOperation()
-                            .execute(currentTopic, message,
-                                    firebaseAuth.getCurrentUser().getDisplayName());
+                    new SendMessageOperation().execute(currentTopic, message, user);
                     inputEditText.setText("");
                     inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
@@ -98,8 +103,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 String arrivedMessage = message.toString().replace("\\n", "\n");
-                adapter.appendMessageItem(new MessageItem(Calendar.getInstance().getTime(),
-                        arrivedMessage));
+                MessageItem messageItem = new MessageItem(Calendar.getInstance().getTime(),
+                        arrivedMessage);
+                new SaveMessageOperation().execute(messageItem.getReceivedTime(),
+                        arrivedMessage, currentTopic, user);
+                adapter.appendMessageItem(messageItem);
                 recyclerView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -108,6 +116,14 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private class SaveMessageOperation extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... strings) {
+            chatEntryDbHelper.addChatEntry(strings[0], strings[1], strings[2], strings[3]);
+            return null;
+        }
     }
 
     @Override
